@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<DataBaseXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <combos>
+    <Combo>
+      <comboName>Mega Kick</comboName>
+      <buttons>
+        <BUTTON>Slap</BUTTON>
+        <BUTTON>Slap</BUTTON>
+        <BUTTON>Throw</BUTTON>
+      </buttons>
+      <pillowAmount>2</pillowAmount>
+    </Combo>
+    <Combo>
+      <comboName>High Jump Kick</comboName>
+      <buttons>
+        <BUTTON>Jump</BUTTON>
+        <BUTTON>Jump</BUTTON>
+        <BUTTON>Throw</BUTTON>
+      </buttons>
+      <pillowAmount>1</pillowAmount>
+    </Combo>
+  </combos>
+</DataBaseXML>

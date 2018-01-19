@@ -13,6 +13,8 @@ public class Combo {
         Throw
     }
     public BUTTON[] buttons = new BUTTON[3];
+
+    [Range(0, 5)]
     public int pillowAmount;
 }
 

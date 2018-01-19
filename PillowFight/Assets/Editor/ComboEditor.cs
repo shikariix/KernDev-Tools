@@ -8,11 +8,11 @@ using System.IO;
 
 public class ComboEditor : EditorWindow {
     
-    //private XMLManager xml;
     public ComboDataBase db;
     private int viewIndex = 1;
 
     private DataBaseXML xml;
+    private DataBaseXML temp;
 
 
     [MenuItem("Custom/Combo Editor")]
@@ -23,10 +23,18 @@ public class ComboEditor : EditorWindow {
     }
 
     void OnEnable() {
-        if (EditorPrefs.HasKey("ObjectPath")) {
-            string objectPath = EditorPrefs.GetString("ObjectPath");
-            db = AssetDatabase.LoadAssetAtPath(objectPath, typeof(ComboDataBase)) as ComboDataBase;
+        if (temp == null) {
+            temp = new DataBaseXML();
+            if (EditorPrefs.HasKey("ObjectPath")) {
+                string objectPath = EditorPrefs.GetString("ObjectPath");
+                db = AssetDatabase.LoadAssetAtPath(objectPath, typeof(ComboDataBase)) as ComboDataBase;
+               
+                if (temp.combos == null) {
+                     temp.combos = db.combos;
+                }
+            }
         }
+        
 
     }
 
@@ -36,23 +44,28 @@ public class ComboEditor : EditorWindow {
         //buttons for saving & loading XML
         GUILayout.BeginHorizontal();
         
-        if (GUILayout.Button("Load", GUILayout.MaxWidth(50))) {
+        if (GUILayout.Button("Load", GUILayout.MaxWidth(40))) {
             Debug.Log("Loading from Asset file.");
             OpenDataBase();
         }
-        if (GUILayout.Button("Save", GUILayout.MaxWidth(50))) {
-            Debug.Log("Saving changes to database is currently not implemented.");
+        if (GUILayout.Button("Save", GUILayout.MaxWidth(40))) {
+            Debug.Log("Saved new asset.");
+            SaveDataBase();
         }
-        if (GUILayout.Button("Export", GUILayout.MaxWidth(60))) {
-            Debug.Log("Saving current changes to XML. The database will not be overwritten.");
+        if (GUILayout.Button("Export", GUILayout.MaxWidth(50))) {
+            Debug.Log("Saving current changes to XML. You can find the file in StreamingAssets.");
             ExportDataBase();
         }
         if (GUILayout.Button("Import", GUILayout.MaxWidth(60))) {
             ImportDataBase();
         }
+        if (GUILayout.Button("Convert", GUILayout.MaxWidth(90))) {
+            Debug.Log("Convert an ItemData XML file to a combo database.");
+            ImportOther();
+        }
         GUILayout.EndHorizontal();
 
-        if (db == null) {
+        if (temp == null) {
             GUILayout.BeginHorizontal ();
             GUILayout.Space(10);
             if (GUILayout.Button("Create New Item List", GUILayout.ExpandWidth(false))) {
@@ -64,9 +77,7 @@ public class ComboEditor : EditorWindow {
             GUILayout.EndHorizontal ();
         }
             
-            GUILayout.Space(20);
-            
-        if (db != null) {
+        if (temp != null) {
             GUILayout.BeginHorizontal ();
             
             GUILayout.Space(10);
@@ -77,7 +88,7 @@ public class ComboEditor : EditorWindow {
             }
             GUILayout.Space(5);
             if (GUILayout.Button("Next", GUILayout.ExpandWidth(false))) {
-                if (viewIndex < db.combos.Count) {
+                if (viewIndex < temp.combos.Count) {
                     viewIndex ++;
                 }
             }
@@ -89,40 +100,35 @@ public class ComboEditor : EditorWindow {
                 AddCombo();
             }
             if (GUILayout.Button("-", GUILayout.MaxWidth(20))) {
-                DeleteCombo(viewIndex);
+                DeleteCombo(viewIndex-1);
             }
 
             GUILayout.EndHorizontal ();
-            if (db.combos == null)
+            if (temp.combos == null)
                 Debug.Log("wtf");
-            if (db.combos.Count > 0) {
+            if (temp.combos.Count > 0) {
                 GUILayout.BeginHorizontal();
-                viewIndex = Mathf.Clamp(EditorGUILayout.IntField("Current Item", viewIndex, GUILayout.ExpandWidth(false)), 1, db.combos.Count);
-                EditorGUILayout.LabelField("of   " + db.combos.Count.ToString() + "  items", "", GUILayout.ExpandWidth(false));
+                viewIndex = Mathf.Clamp(EditorGUILayout.IntField("Current Item", viewIndex, GUILayout.ExpandWidth(false)), 1, temp.combos.Count);
+                EditorGUILayout.LabelField("of   " + temp.combos.Count.ToString() + "  items", "", GUILayout.ExpandWidth(false));
                 GUILayout.EndHorizontal();
-                
-                db.combos[viewIndex - 1].comboName = EditorGUILayout.TextField("Combo Name", db.combos[viewIndex - 1].comboName, GUILayout.MaxWidth(position.width - 6));
-                db.combos[viewIndex - 1].pillowAmount = EditorGUILayout.IntField("Pillows to use", db.combos[viewIndex - 1].pillowAmount, GUILayout.MaxWidth(position.width - 6));
+
+                temp.combos[viewIndex - 1].comboName = EditorGUILayout.TextField("Combo Name", temp.combos[viewIndex - 1].comboName, GUILayout.MaxWidth(position.width - 6));
+                //pas dit aan naar range
+                temp.combos[viewIndex - 1].pillowAmount = EditorGUILayout.IntField("Objects to use", temp.combos[viewIndex - 1].pillowAmount, GUILayout.MaxWidth(position.width - 6));
                 GUILayout.BeginVertical();
-                int offset = 142;
-                for (int i = 0; i < db.combos[viewIndex - 1].buttons.Length; i++) {
-                    db.combos[viewIndex - 1].buttons[i] = (Combo.BUTTON)EditorGUI.EnumPopup(
+                int offset = 122;
+                for (int i = 0; i < temp.combos[viewIndex - 1].buttons.Length; i++) {
+                    temp.combos[viewIndex - 1].buttons[i] = (Combo.BUTTON)EditorGUI.EnumPopup(
                     new Rect(4, offset, position.width - 6, 15),
                     "Button "+ i + ":",
-                    db.combos[viewIndex - 1].buttons[i]);
+                    temp.combos[viewIndex - 1].buttons[i]);
                     offset += 18;
                 }
             } 
-            else 
-            {
-                GUILayout.Label ("This Inventory List is Empty.");
+            else {
+                GUILayout.Label ("This Combo Database is Empty."); //YEET
             }
         }
-        if (GUI.changed) 
-        {
-            EditorUtility.SetDirty(db);
-        }
-        
 
     }
 
@@ -130,12 +136,13 @@ public class ComboEditor : EditorWindow {
         // There is no overwrite protection here!
         // There is No "Are you sure you want to overwrite your existing object?" if it exists.
         // This should probably get a string from the user to create a new name and pass it ...
-        db = CreateComboDataBase.Create();
+        db = CreateComboDataBase.Create(temp, db);
         if (db) {
             db.combos = new List<Combo>();
             string relPath = AssetDatabase.GetAssetPath(db);
             EditorPrefs.SetString("ObjectPath", relPath);
         }
+        temp.combos = db.combos;
     }
 
     void OpenDataBase() {
@@ -148,40 +155,122 @@ public class ComboEditor : EditorWindow {
             if (db) {
                 EditorPrefs.SetString("ObjectPath", relPath);
             }
+            temp.combos = db.combos;
             Debug.Log("Load succesful.");
         }
     }
 
     void SaveDataBase() {
-        //move currently loaded combos to a database in the project
+        //save settings to database that's being edited rn
+        db = CreateComboDataBase.Create(temp, db);
     }
 
     void ImportDataBase() {
-        string absPath = EditorUtility.OpenFilePanel ("Select Combo Database", "", "");
+        string absPath = EditorUtility.OpenFilePanel ("Select Combo Database XML", "", "");
         XmlSerializer serializer = new XmlSerializer(typeof(DataBaseXML));
         FileStream stream = null;
         stream = new FileStream(absPath, FileMode.Open);
         xml = serializer.Deserialize(stream) as DataBaseXML;
-        db = xml.db;
+        temp.combos = xml.combos;
         stream.Close();
     }
 
     void ExportDataBase() {
         XmlSerializer serializer = new XmlSerializer(typeof(DataBaseXML));
-        FileStream stream = new FileStream(Application.persistentDataPath + "/ComboData.xml", FileMode.Create);
+        FileStream stream = new FileStream(Application.streamingAssetsPath + "/ComboData.xml", FileMode.Create);
         xml = new DataBaseXML();
-        xml.db = db;
+        xml.combos = temp.combos;
         serializer.Serialize(stream, xml);
         stream.Close();
+    }
+
+    void ImportOther() {
+        string absPath = EditorUtility.OpenFilePanel ("Select Combo Database XML", "", "");
+        XmlSerializer serializer = new XmlSerializer(typeof(ItemData));
+        FileStream stream = null;
+        stream = new FileStream(absPath, FileMode.Open);
+        ItemData data = serializer.Deserialize(stream) as ItemData;
+        temp.combos = new List<Combo>();
+        foreach (Item i in data.Data.Item) {
+            Combo c = new Combo();
+            c.comboName = i.Name;
+            c.pillowAmount = i.AmoutOfTags;
+
+            //Set buttons based on strings in the items
+            char startC = i.Category[0];
+            if (startC == 'A' || 
+                startC == 'B' || 
+                startC == 'C' || 
+                startC == 'D' || 
+                startC == 'E' || 
+                startC == 'G' || 
+                startC == 'H' || 
+                startC == 'I') {
+                c.buttons[0] = Combo.BUTTON.Slap;
+            } else if (
+                startC == 'J' ||
+                startC == 'F' ||
+                startC == 'K' ||
+                startC == 'L' ||
+                startC == 'M' ||
+                startC == 'N' ||
+                startC == 'O' ||
+                startC == 'P' ||
+                startC == 'Q' ||
+                startC == 'R') {
+                c.buttons[0] = Combo.BUTTON.Jump;
+            } else {
+                c.buttons[0] = Combo.BUTTON.Throw;
+            }
+
+            if (i.PrefabName.Contains("00")) {
+                c.buttons[1] = Combo.BUTTON.Slap;
+            } else if (i.PrefabName.Contains("01")) {
+                c.buttons[1] = Combo.BUTTON.Jump;
+            } else {
+                c.buttons[1] = Combo.BUTTON.Throw;
+            }
+
+            char startD = i.Description[0];
+            if (startD == 'A' ||
+                startD == 'B' ||
+                startD == 'C' ||
+                startD == 'D' ||
+                startD == 'E' ||
+                startD == 'F' ||
+                startD == 'G' ||
+                startD == 'H' ||
+                startD == 'I') {
+                c.buttons[0] = Combo.BUTTON.Throw;
+            }
+            else if (
+              startD == 'J' ||
+              startD == 'K' ||
+              startD == 'L' ||
+              startD == 'M' ||
+              startD == 'N' ||
+              startD == 'O' ||
+              startD == 'P' ||
+              startD == 'Q' ||
+              startD == 'R') {
+                c.buttons[0] = Combo.BUTTON.Jump;
+            }
+            else {
+                c.buttons[0] = Combo.BUTTON.Slap;
+            }
+
+            //when all info has been set, the new combo can be added to the combo database
+            temp.combos.Add(c);
+        }
     }
 
     void AddCombo() {
         Combo newItem = new Combo();
         newItem.comboName = "Default";
-        db.combos.Add(newItem);
+        temp.combos.Add(newItem);
     }
 
     void DeleteCombo(int index) {
-        db.combos.RemoveAt(index);
+        temp.combos.RemoveAt(index);
     }
 }

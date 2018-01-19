@@ -261,6 +261,37 @@ Prefab:
       propertyPath: Combos.Array.data[1].buttons.Array.data[2]
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114421422033686574, guid: f381c0a14e05c5b43b380d0fe68e4727,
+        type: 2}
+      propertyPath: Combos.Array.data[0].buttons.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114421422033686574, guid: f381c0a14e05c5b43b380d0fe68e4727,
+        type: 2}
+      propertyPath: Combos.Array.data[0].buttons.Array.data[1]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114421422033686574, guid: f381c0a14e05c5b43b380d0fe68e4727,
+        type: 2}
+      propertyPath: Combos.Array.data[0].buttons.Array.data[2]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114421422033686574, guid: f381c0a14e05c5b43b380d0fe68e4727,
+        type: 2}
+      propertyPath: db
+      value: 
+      objectReference: {fileID: 11400000, guid: 34e431a56a4e79f40926e53db45c8c8c,
+        type: 2}
+    - target: {fileID: 114421422033686574, guid: f381c0a14e05c5b43b380d0fe68e4727,
+        type: 2}
+      propertyPath: Combos.Array.data[0]
+      value: Arrow
+      objectReference: {fileID: 0}
+    - target: {fileID: 114421422033686574, guid: f381c0a14e05c5b43b380d0fe68e4727,
+        type: 2}
+      propertyPath: Combos.Array.data[1]
+      value: Staff
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
   m_ParentPrefab: {fileID: 100100000, guid: f381c0a14e05c5b43b380d0fe68e4727, type: 2}
@@ -591,6 +622,12 @@ Prefab:
       propertyPath: inputR1
       value: R1_P2
       objectReference: {fileID: 0}
+    - target: {fileID: 114421422033686574, guid: f381c0a14e05c5b43b380d0fe68e4727,
+        type: 2}
+      propertyPath: db
+      value: 
+      objectReference: {fileID: 11400000, guid: 4e217df0d7eca7e489801b5544eeefe3,
+        type: 2}
     m_RemovedComponents:
     - {fileID: 0}
   m_ParentPrefab: {fileID: 100100000, guid: f381c0a14e05c5b43b380d0fe68e4727, type: 2}
@@ -922,6 +959,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Combos: []
+  db: {fileID: 11400000, guid: 34e431a56a4e79f40926e53db45c8c8c, type: 2}
+  comboData: []
 --- !u!1 &1727296691
 GameObject:
   m_ObjectHideFlags: 0
@@ -1077,7 +1116,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1912892565}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 425.5, y: 155, z: 0}
+  m_LocalPosition: {x: 399.5, y: 155, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 395080287}

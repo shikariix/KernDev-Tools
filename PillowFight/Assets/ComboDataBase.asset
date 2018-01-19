@@ -11,10 +11,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feec9832449d71d4397d580ba3dc5918, type: 3}
   m_Name: ComboDataBase
   m_EditorClassIdentifier: 
-  combos:
-  - comboName: Drop Kick
-    buttons: 020000000100000001000000
-    pillowAmount: 0
-  - comboName: Default
-    buttons: 000000000000000000000000
-    pillowAmount: 0
+  combos: []

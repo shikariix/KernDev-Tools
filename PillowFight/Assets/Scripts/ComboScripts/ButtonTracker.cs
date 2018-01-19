@@ -61,13 +61,13 @@ public class ButtonTracker : MonoBehaviour {
         //for every player
         for (int i = 0; i < players.Count; i++) {
             //for every combo
-            for (int j = 0; j < comboManagers[i].Combos.Count; j++) {
+            for (int j = 0; j < comboManagers[i].comboData.Count; j++) {
                 //for every button
-                for (int k = 0; k < comboManagers[i].Combos[j].buttons.Length; k++) {
+                for (int k = 0; k < comboManagers[i].comboData[j].buttons.Length; k++) {
                     //make sure the queue isnt empty
                     if (players[i].inputQueue.Count > 0) {
                         //check if all buttons are equal
-                        if (comboManagers[i].Combos[j].buttons[k].ToString() == players[i].inputQueue[k]) {
+                        if (comboManagers[i].comboData[j].buttons[k].ToString() == players[i].inputQueue[k]) {
                             comboChecker[k] = true;
                         }
                         else {

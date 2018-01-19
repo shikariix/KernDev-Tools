@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class DataBaseXML {
 
-    public ComboDataBase db;
+    public List<Combo> combos;
 }
